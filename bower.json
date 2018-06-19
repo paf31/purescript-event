@@ -16,9 +16,9 @@
   "devDependencies": {
     "purescript-psci-support": "^4.0.0"
   },
-  "license": "BSD3",
+  "license": "BSD-3-Clause",
   "repository": {
     "type": "git",
-    "url": "git://github.com/paf31/purescript-behaviors.git"
+    "url": "git://github.com/paf31/purescript-event.git"
   }
 }
