@@ -1,0 +1,24 @@
+{
+  "name": "purescript-event",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "output"
+  ],
+  "dependencies": {
+    "purescript-prelude": "^4.0.1",
+    "purescript-console": "^4.1.0",
+    "purescript-effect": "^2.0.0",
+    "purescript-filterable": "^3.0.0",
+    "purescript-nullable": "^4.0.0"
+  },
+  "devDependencies": {
+    "purescript-psci-support": "^4.0.0"
+  },
+  "license": "BSD3",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/paf31/purescript-behaviors.git"
+  }
+}
