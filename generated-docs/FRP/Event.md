@@ -37,7 +37,7 @@ at the times when the second event fires.
 #### `Event`
 
 ``` purescript
-data Event a
+newtype Event a
 ```
 
 An `Event` represents a collection of discrete occurrences with associated
