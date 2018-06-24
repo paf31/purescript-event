@@ -128,6 +128,8 @@ keepLatest (Event e) = Event \k -> do
   cancelInner <- Ref.new Nothing
   c <- e \inner -> do
     Ref.read cancelInner >>= sequence_
+    c <- subscribe inner k
+    Ref.write (Just c) cancelInner
   cancelOuter <- Ref.new c
   pure do
     Ref.read cancelInner >>= sequence_
