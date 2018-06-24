@@ -42,7 +42,7 @@ instance functorEvent :: Functor Event where
   map f (Event e) = Event \k -> e (k <<< f)
 
 instance compactableEvent :: Compactable Event where
-  compact xs = unsafePartial (map fromJust) (filter isJust xs)
+  compact xs = map (\x -> unsafePartial fromJust x) (filter isJust xs)
   separate xs =
     { left: unsafePartial (map fromLeft) (filter isLeft xs)
     , right: unsafePartial (map fromRight) (filter isRight xs)
@@ -51,7 +51,7 @@ instance compactableEvent :: Compactable Event where
 instance filterableEvent :: Filterable Event where
   filter = filter
 
-  filterMap f = unsafePartial (map fromJust <<< filter isJust <<< map f)
+  filterMap f = map (\x -> unsafePartial fromJust x) <<< filter isJust <<< map f
 
   partition p xs = { yes: filter p xs, no: filter (not <<< p) xs }
 
@@ -108,7 +108,7 @@ fold f (Event e) b = Event \k -> do
 
 -- | Create an `Event` which only fires when a predicate holds.
 filter :: forall a. (a -> Boolean) -> Event a -> Event a
-filter p (Event e) = Event \k -> e \a -> when (p a) (k a)
+filter p (Event e) = Event \k -> e \a -> if p a then k a else pure unit
 
 -- | Create an `Event` which samples the latest values from the first event
 -- | at the times when the second event fires.
