@@ -12,7 +12,9 @@
     "purescript-effect": "^2.0.0",
     "purescript-filterable": "^3.0.0",
     "purescript-nullable": "^4.0.0",
-    "purescript-unsafe-reference": "purescript-contrib/purescript-unsafe-reference#^3.0.1"
+    "purescript-unsafe-reference": "purescript-contrib/purescript-unsafe-reference#^3.0.1",
+    "purescript-js-timers": "^4.0.1",
+    "purescript-now": "^4.0.0"
   },
   "devDependencies": {
     "purescript-psci-support": "^4.0.0"

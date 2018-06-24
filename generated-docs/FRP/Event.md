@@ -75,6 +75,18 @@ create :: forall a. Effect { event :: Event a, push :: a -> Effect Unit }
 
 Create an event and a function which supplies a value to that event.
 
+#### `makeEvent`
+
+``` purescript
+makeEvent :: forall a. ((a -> Effect Unit) -> Effect (Effect Unit)) -> Event a
+```
+
+Make an `Event` from a function which accepts a callback and returns an
+unsubscription function.
+
+Note: you probably want to use `create` instead, unless you need explicit
+control over unsubscription.
+
 #### `subscribe`
 
 ``` purescript

@@ -1,6 +1,7 @@
 module FRP.Event
   ( Event
   , create
+  , makeEvent
   , subscribe
   , module Class
   ) where
@@ -151,6 +152,17 @@ subscribe
   -> (a -> Effect r)
   -> Effect (Effect Unit)
 subscribe (Event e) k = e (void <<< k)
+
+-- | Make an `Event` from a function which accepts a callback and returns an
+-- | unsubscription function.
+-- |
+-- | Note: you probably want to use `create` instead, unless you need explicit
+-- | control over unsubscription.
+makeEvent
+  :: forall a
+   . ((a -> Effect Unit) -> Effect (Effect Unit))
+  -> Event a
+makeEvent = Event
 
 -- | Create an event and a function which supplies a value to that event.
 create
