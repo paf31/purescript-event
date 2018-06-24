@@ -28,7 +28,7 @@ withTime :: forall a. Event a -> Event { value :: a, time :: Instant }
 withTime e = makeEvent \k ->
   subscribe e \value -> do
     time <- now
-    pure { time, value }
+    k { time, value }
 
 -- | On each event, ignore subsequent events for a given number of milliseconds.
 debounce :: forall a. Milliseconds -> Event a -> Event a
