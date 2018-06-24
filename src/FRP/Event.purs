@@ -80,7 +80,7 @@ instance applicativeEvent :: Applicative Event where
 instance altEvent :: Alt Event where
   alt (Event f) (Event g) = Event \k -> do
     c1 <- f k
-    c2 <- f k
+    c2 <- g k
     pure (c1 *> c2)
 
 instance plusEvent :: Plus Event where
