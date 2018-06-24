@@ -126,14 +126,13 @@ sampleOn (Event e1) (Event e2) = Event \k -> do
 keepLatest :: forall a. Event (Event a) -> Event a
 keepLatest (Event e) = Event \k -> do
   cancelInner <- Ref.new Nothing
-  c <- e \inner -> do
+  cancelOuter <- e \inner -> do
     Ref.read cancelInner >>= sequence_
     c <- subscribe inner k
     Ref.write (Just c) cancelInner
-  cancelOuter <- Ref.new c
   pure do
     Ref.read cancelInner >>= sequence_
-    Ref.read cancelOuter >>= identity
+    cancelOuter
 
 -- | Compute a fixed point
 fix :: forall i o. (Event i -> { input :: Event i, output :: Event o }) -> Event o
