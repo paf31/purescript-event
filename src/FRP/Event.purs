@@ -1,5 +1,6 @@
 module FRP.Event
   ( Event
+  , EventIO
   , create
   , makeEvent
   , subscribe
@@ -19,7 +20,7 @@ import Data.Maybe (Maybe(..), fromJust, isJust)
 import Effect (Effect)
 import Effect.Ref as Ref
 import Effect.Unsafe (unsafePerformEffect)
-import FRP.Event.Class (class Filterable, class IsEvent, count, filterMap, fix, 
+import FRP.Event.Class (class Filterable, class IsEvent, count, filterMap, fix,
                         fold, folded, gate, gateBy, keepLatest, mapAccum,
                         sampleOn, sampleOn_, withLast) as Class
 import Partial.Unsafe (unsafePartial)
@@ -120,7 +121,7 @@ sampleOn (Event e1) (Event e2) = Event \k -> do
   c2 <- e2 \f -> do
     Ref.read latest >>= traverse_ (k <<< f)
   pure (c1 *> c2)
-  
+
 -- | Flatten a nested `Event`, reporting values only from the most recent
 -- | inner `Event`.
 keepLatest :: forall a. Event (Event a) -> Event a
@@ -143,7 +144,7 @@ fix f = Event \k -> do
   where
     { event, push } = unsafePerformEffect create
     { input, output } = f event
-    
+
 -- | Subscribe to an `Event` by providing a callback.
 -- |
 -- | `subscribe` returns a canceller function.
@@ -165,13 +166,15 @@ makeEvent
   -> Event a
 makeEvent = Event
 
+type EventIO a =
+  { event :: Event a
+  , push :: a -> Effect Unit
+  }
+
 -- | Create an event and a function which supplies a value to that event.
 create
   :: forall a
-   . Effect
-       { event :: Event a
-       , push :: a -> Effect Unit
-       }
+   . Effect (EventIO a)
 create = do
   subscribers <- Ref.new []
   pure
