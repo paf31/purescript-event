@@ -15,7 +15,7 @@ import Data.Array (deleteBy)
 import Data.Either (either, fromLeft, fromRight, hush, isLeft, isRight)
 import Data.Compactable (class Compactable)
 import Data.Filterable (class Filterable, filterMap)
-import Data.Foldable (sequence_, traverse_)
+import Data.Foldable (sequence_, traverse_, maximumBy)
 import Data.Maybe (Maybe(..), fromJust, isJust)
 import Effect (Effect)
 import Effect.Ref as Ref
@@ -24,7 +24,6 @@ import FRP.Event.Class (class Filterable, class IsEvent, count, filterMap, fix,
                         fold, folded, gate, gateBy, keepLatest, mapAccum,
                         sampleOn, sampleOn_, withLast) as Class
 import Partial.Unsafe (unsafePartial)
-import Unsafe.Reference (unsafeRefEq)
 
 -- | An `Event` represents a collection of discrete occurrences with associated
 -- | times. Conceptually, an `Event` is a (possibly-infinite) list of values-and-times:
@@ -179,10 +178,24 @@ create = do
   subscribers <- Ref.new []
   pure
     { event: Event \k -> do
-        _ <- Ref.modify (_ <> [k]) subscribers
+        i <- (+) 1 <$> (Ref.read subscribers >>= findMax >>= extractIndex)
+        let r = { i: i, k: k }
+        _ <- Ref.modify (_ <> [r]) subscribers
         pure do
-          _ <- Ref.modify (deleteBy unsafeRefEq k) subscribers
+          _ <- Ref.modify (deleteBy (\r0 r1 -> r0.i == r1.i) r) subscribers
           pure unit
     , push: \a -> do
-        Ref.read subscribers >>= traverse_ \k -> k a
+        Ref.read subscribers >>= traverse_ \r' -> r'.k a
     }
+  where
+    findMax
+      :: forall r
+      .  Array { i :: Int | r }
+      -> Effect (Maybe { i :: Int | r })
+    findMax = pure <<< maximumBy (\r0 r1 -> compare r0.i r1.i)
+    extractIndex
+      :: forall r
+      .  Maybe { i :: Int | r }
+      -> Effect Int
+    extractIndex (Just { i: i }) = pure i
+    extractIndex Nothing         = pure (-1)
