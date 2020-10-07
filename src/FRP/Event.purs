@@ -145,6 +145,36 @@ fix f = Event \k -> do
     { event, push } = unsafePerformEffect create
     { input, output } = f event
 
+-- | Emits previous and current event value
+withPrevious :: forall a . Event a -> Event { previous :: Maybe a, current :: a }
+withPrevious event = makeEvent \push -> do
+  latest <- Ref.new Nothing
+  closeInner <- subscribe event \current -> do
+     previous <- Ref.read latest
+     Ref.write (Just current) latest
+     push { previous, current }
+  pure closeInner
+
+-- | Returns an Event that emits all items emitted by the source Event that are distinct by
+-- | comparison from previous items, using custom equality function.
+-- | First argument is previous value, send - current.
+distinctWith :: forall a . (a -> a -> Boolean) -> Event a -> Event a
+distinctWith isEq event = filterMap
+  (\{ current, previous } ->
+    case previous of
+         Just previous' ->
+           if isEq previous' current
+             then Nothing
+             else Just current
+         Nothing -> Just current
+  )
+  (withPrevious event)
+
+-- | Returns an Event that emits all items emitted by the source Event that are distinct by
+-- | comparison from previous items.
+distinct :: forall a . Eq a => Event a -> Event a
+distinct = distinctWith eq
+
 -- | Subscribe to an `Event` by providing a callback.
 -- |
 -- | `subscribe` returns a canceller function.
