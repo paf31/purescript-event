@@ -7,21 +7,21 @@
     "output"
   ],
   "dependencies": {
-    "purescript-prelude": "^4.0.1",
-    "purescript-console": "^4.1.0",
-    "purescript-effect": "^2.0.0",
-    "purescript-filterable": "^3.0.0",
-    "purescript-nullable": "^4.0.0",
-    "purescript-unsafe-reference": "purescript-contrib/purescript-unsafe-reference#^3.0.1",
-    "purescript-js-timers": "^4.0.1",
-    "purescript-now": "^4.0.0"
+    "purescript-prelude": "master",
+    "purescript-console": "master",
+    "purescript-effect": "master",
+    "purescript-filterable": "thomashoneyman/purescript-filterable#master",
+    "purescript-nullable": "main",
+    "purescript-unsafe-reference": "main",
+    "purescript-js-timers": "main",
+    "purescript-now": "main"
   },
   "devDependencies": {
-    "purescript-psci-support": "^4.0.0"
+    "purescript-psci-support": "master"
   },
   "license": "BSD-3-Clause",
   "repository": {
     "type": "git",
-    "url": "git://github.com/paf31/purescript-event.git"
+    "url": "https://github.com/paf31/purescript-event.git"
   }
 }
