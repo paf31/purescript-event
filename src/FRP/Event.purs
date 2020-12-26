@@ -12,7 +12,7 @@ import Prelude
 import Control.Alternative (class Alt, class Alternative, class Plus)
 import Control.Apply (lift2)
 import Data.Array (deleteBy)
-import Data.Either (either, fromLeft, fromRight, hush, isLeft, isRight)
+import Data.Either (either, hush, isLeft, isRight)
 import Data.Compactable (class Compactable)
 import Data.Filterable (class Filterable, filterMap)
 import Data.Foldable (sequence_, traverse_)
@@ -23,7 +23,7 @@ import Effect.Unsafe (unsafePerformEffect)
 import FRP.Event.Class (class Filterable, class IsEvent, count, filterMap, fix,
                         fold, folded, gate, gateBy, keepLatest, mapAccum,
                         sampleOn, sampleOn_, withLast) as Class
-import Partial.Unsafe (unsafePartial)
+import Partial.Unsafe (unsafePartial, unsafeCrashWith)
 import Unsafe.Reference (unsafeRefEq)
 
 -- | An `Event` represents a collection of discrete occurrences with associated
@@ -45,8 +45,8 @@ instance functorEvent :: Functor Event where
 instance compactableEvent :: Compactable Event where
   compact xs = map (\x -> unsafePartial fromJust x) (filter isJust xs)
   separate xs =
-    { left: unsafePartial (map fromLeft) (filter isLeft xs)
-    , right: unsafePartial (map fromRight) (filter isRight xs)
+    { left: map (either identity (\_ -> unsafeCrashWith "Expected Left")) (filter isLeft xs)
+    , right: map (either (\_ -> unsafeCrashWith "Expected Right") identity) (filter isRight xs)
     }
 
 instance filterableEvent :: Filterable Event where
